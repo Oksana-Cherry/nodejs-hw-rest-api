@@ -1,6 +1,6 @@
 ## GoIT Node.js Course Template Homework
 1. npm init -y
-2.
+2. npm install express, morgan, cors
 3.
 
 Выполните форк этого репозитория для выполнения домашних заданий (2-6)
