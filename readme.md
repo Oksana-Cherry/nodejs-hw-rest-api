@@ -1,6 +1,7 @@
 ## GoIT Node.js Course Template Homework
-npm init -y
-
+1. npm init -y
+2.
+3.
 
 Выполните форк этого репозитория для выполнения домашних заданий (2-6)
 Форк создаст репозиторий на вашем http://github.com
