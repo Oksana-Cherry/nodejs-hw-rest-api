@@ -1,4 +1,5 @@
 ## GoIT Node.js Course Template Homework
+
 * npm init -y
 * npm i
 * npm i express -E
@@ -19,9 +20,6 @@ extends: ['standard', 'plugin:json/recommended', 'prettier']
 "lint": "eslint **/*.{js,json}",
 "lint:fix": "eslint--fix **/*.{js,json}"
 * файл .prettierrc.json
-
-
-
 Выполните форк этого репозитория для выполнения домашних заданий (2-6)
 Форк создаст репозиторий на вашем http://github.com
 
