@@ -1,4 +1,26 @@
 ## GoIT Node.js Course Template Homework
+* npm init -y
+* npm i
+* npm i express -E
+* npm i nodemon -DE (Он позволяет выполнять live reload сервера при разработке.)
+* npm i uuid (генерация уникального id ) 
+* npm i morgan (для протоколирования запросов)
+* npm install lowdb (создаёт базу данных в json файле (как lodash))
+* npm install dotenv ( локальные переменные из файла .env (защита секретных ключей))
+* npm install cors (Механизм CORS делает безопасные перекрестные запросы и передачи данных между web-браузерами и web-серверами)
+* npm i got dotenv -E ()
+* npm i eslint-config-prettier ( дружба lintrc+prittierrc)
+* npm i eslint-plugin-json 
+* npm install joi (валидация)
+
+* в файле .eslintrc.js:
+extends: ['standard', 'plugin:json/recommended', 'prettier']
+* в файле package.json:
+"lint": "eslint **/*.{js,json}",
+"lint:fix": "eslint--fix **/*.{js,json}"
+* файл .prettierrc.json
+
+
 
 Выполните форк этого репозитория для выполнения домашних заданий (2-6)
 Форк создаст репозиторий на вашем http://github.com
@@ -24,7 +46,6 @@
 - JS-код чистый и понятный, для форматирования используется Prettier
 
 ### Команды:
-
 - `npm start` &mdash; старт сервера в режиме production
 - `npm run start:dev` &mdash; старт сервера в режиме разработки (development)
 - `npm run lint` &mdash; запустить выполнение проверки кода с eslint, необходимо выполнять перед каждым PR и исправлять все ошибки линтера

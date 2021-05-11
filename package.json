@@ -6,20 +6,44 @@
     "start": "cross-env NODE_ENV=production node ./bin/server.js",
     "start:dev": "cross-env NODE_ENV=development nodemon ./bin/server.js",
     "lint": "eslint **/*.js",
-    "lint:fix": "eslint --fix **/*.js"
+    "lint:fix": "eslint--fix **/*.js"
   },
   "dependencies": {
     "cors": "2.8.5",
-    "cross-env": "7.0.3",
+    "dotenv": "9.0.0",
     "express": "4.17.1",
-    "morgan": "1.10.0"
+    "got": "11.8.2",
+    "joi": "^17.4.0",
+    "lowdb": "^1.0.0",
+    "morgan": "1.10.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "eslint": "^7.19.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-json": "^3.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.23.2",
     "nodemon": "2.0.7"
-  }
+  },
+  "description": "",
+  "main": ".eslintrc.js",
+  "bin": {
+    "template": "server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oksana-Cherry/nodejs-hw-rest-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Oksana-Cherry/nodejs-hw-rest-api/issues"
+  },
+  "homepage": "https://github.com/Oksana-Cherry/nodejs-hw-rest-api#readme"
 }
