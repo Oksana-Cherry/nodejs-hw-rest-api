@@ -1,13 +1,7 @@
 const Joi = require('joi');
 
 const schemaAddContact = Joi.object({
-    name: Joi.string()// строкой , кол-во символов, и обязательное поле  username
-       // .alphanum()
-        .min(3)
-        .max(30)
-        .required(),
-
-   /* password: Joi.string()   // строкой, накладывает патерн регулярки
+  /* password: Joi.string()   // строкой, накладывает патерн регулярки
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
 
     repeat_password: Joi.ref('password'),// правила такие как в поле password
@@ -21,60 +15,45 @@ const schemaAddContact = Joi.object({
         .integer()
         .min(1900)
         .max(2013), */
+  // строкой , кол-во символов, и обязательное поле  username
+  name: Joi.string().alphanum().min(3).max(30).required(),
+  email: Joi.string().email().required(), // .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })  // кол-во символов , и какие символы
+  phone: Joi.string()
+    .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
+    .required(), // .number().integer().positive().min(4).max(10).required(),
+  favorite: Joi.boolean().optional(),
+});
 
-    email: Joi.string().email().required().required(), 
-    // .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })  // кол-во символов , и какие символы  
-    phone: Joi.number().integer().positive().min(4).max(10).required(),
-})
-  const schemaUpdateContact = Joi.object({
-    name: Joi.string().min(3).max(30).optional(),
-    email: Joi.string().email().optional(),
-    phone: Joi.number().integer().positive().min(4).max(10).optional(),
-})
-    
+const schemaUpdateContact = Joi.object({
+  name: Joi.string().alphanum().min(3).max(30).optional(),
+  email: Joi.string().email().optional(),
+  phone: Joi.string()
+    .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
+    .optional(), // .number().integer().positive().min(4).max(10).optional(),
+  favorite: Joi.boolean().optional(),
+});
 
+const schemaStatusFavoriteContact = Joi.object({
+  favorite: Joi.boolean().required(),
+});
 
-const validate = async (schema,  body, next) => {
+const validate = async (schema, body, next) => {
   try {
     await schema.validateAsync(body);
-    next()
-}
-  catch (err) {
+    next();
+  } catch (err) {
     // const [{ message }] = err.details;
-    next({ status: 400, message: `Filed: ${err.message.replace(/"/g, '')}` })
- }
-} 
+    next({ status: 400, message: `Filed: ${err.message.replace(/"/g, '')}` });
+  }
+};
 
 module.exports.validateAddContact = (req, _res, next) => {
-    return validate(schemaAddContact, req.body, next);
+  return validate(schemaAddContact, req.body, next);
 };
 
 module.exports.validateUpdateContact = (req, _res, next) => {
-    return validate(schemaUpdateContact, req.body, next);
+  return validate(schemaUpdateContact, req.body, next);
 };
-
-  /* const validate = (schema, obj, next) => {
-    const { error } = schema.validate(obj);
-    if (error) {
-        const [{ message }] = error.details;
-        return next({
-            status: 400,
-            message: `Filed: ${message.replace(/"/g, '')}`,
-        });
-    }
-    next();
-}; */
-  
-  
-  /* .with('name', 'birth_year')  // взаимозаменяемые поля
-  .xor('password', 'access_token') // Взаимоисключающие поля
-  .with('password', 'repeat_password');// оба поля обязательны */
-
-
-/* schema.validate({ name: 'abc', birth_year: 1994 });
-// -> { value: { username: 'abc', birth_year: 1994 } }
-
-schema.validate({});
-// -> { value: {}, error: '"username" is required' }
-*/
-
+module.exports.validateStatusFavoriteContact = (req, _res, next) => {
+  return validate(schemaStatusFavoriteContact, req.body, next);
+};
