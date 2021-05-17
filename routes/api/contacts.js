@@ -37,7 +37,7 @@ router.get('/:contactId', async (req, res, next) => {
   try {
     const contact = await Contacts.getContactById(req.params.contactId);
     if (contact) {
-      return res.status(200).json({
+      return res.status(HttpCode.OK).json({
         status: 'success',
         code: HttpCode.OK,
         data: { contact },
@@ -99,15 +99,6 @@ router.put('/:contactId', validateUpdateContact, async (req, res, next) => {
       req.params.contactId,
       req.body,
     );
-
-    /* if (!req.body) {
-            return res.status(400).json({
-                status: 'error',
-                code: 400,
-                message: 'missing fields',
-            });
-         } */
-
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -124,24 +115,33 @@ router.put('/:contactId', validateUpdateContact, async (req, res, next) => {
     next(error);
   }
 });
-/* router.patch('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-}) */
 
 router.patch(
   '/:contactId/favorite',
   validateStatusFavoriteContact,
   async (req, res, next) => {
     try {
-      const contact = await Contacts.update(req.params.id, req.body);
+      if (!req.body.favorite) {
+        return res.status(HttpCode.BAD_REQUEST).json({
+          status: 'error',
+          code: HttpCode.BAD_REQUEST,
+          message: 'missing field favorite',
+        });
+      }
+      const contact = await Contacts.updateStatusContact(
+        req.params.contactId,
+        req.body,
+      );
       if (contact) {
         return res
-          .status(200)
-          .json({ status: 'success', code: 200, data: { contact } });
+          .status(HttpCode.OK)
+          .json({ status: 'success', code: HttpCode.OK, data: { contact } });
       }
-      return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'Not Found' });
+      return res.status(HttpCode.NOT_FOUND).json({
+        status: 'error',
+        code: HttpCode.NOT_FOUND,
+        message: 'Not Found',
+      });
     } catch (error) {
       next(error);
     }

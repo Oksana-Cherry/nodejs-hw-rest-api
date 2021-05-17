@@ -17,20 +17,20 @@ const schemaAddContact = Joi.object({
         .max(2013), */
   // строкой , кол-во символов, и обязательное поле  username
   name: Joi.string().alphanum().min(3).max(30).required(),
-  email: Joi.string().email().required(), // .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })  // кол-во символов , и какие символы
+  email: Joi.string().required(), // .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })  // кол-во символов , и какие символы
   phone: Joi.string()
     .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
     .required(), // .number().integer().positive().min(4).max(10).required(),
-  favorite: Joi.boolean().optional(),
+  // favorite: Joi.boolean().optional(),
 });
 
 const schemaUpdateContact = Joi.object({
   name: Joi.string().alphanum().min(3).max(30).optional(),
-  email: Joi.string().email().optional(),
+  email: Joi.string().optional(),
   phone: Joi.string()
     .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
     .optional(), // .number().integer().positive().min(4).max(10).optional(),
-  favorite: Joi.boolean().optional(),
+  // favorite: Joi.boolean().optional(),
 });
 
 const schemaStatusFavoriteContact = Joi.object({

@@ -25,16 +25,6 @@ const getContactById = async contactId => {
   return result;
 };
 
-const removeContact = async contactId => {
-  /*  const collection = await getCollection(db, 'contacts');
-  // const [record] = db.get('contacts').remove({ id: contactId }).write();
-  const { value: result } = await collection.findOneAndDelete({
-    _id: new ObjectId(contactId),
-  }); */
-  const result = await Contact.findByIdAndRemove({ _id: contactId });
-  return result;
-};
-
 const addContact = async body => {
   // create
   /* const collection = await getCollection(db, 'contacts');
@@ -48,7 +38,7 @@ const addContact = async body => {
     ops: [result],
   } = await collection.insertOne(record); // db.get('contacts').push(record).write(); */
 
-  const result = await Contact.create({ body });
+  const result = await Contact.create(body);
   return result; // return record;}
 };
 const updateContact = async (contactId, body) => {
@@ -63,7 +53,15 @@ const updateContact = async (contactId, body) => {
     { $set: body },
     { returnOriginal: false },
   ); */
-  const result = await Contact.findOneAndUpdate(
+  const result = await Contact.findByIdAndUpdate(
+    { _id: contactId },
+    { ...body },
+    { new: true },
+  );
+  return result;
+};
+const updateStatusContact = async (contactId, body) => {
+  const result = await Contact.findByIdAndUpdate(
     { _id: contactId },
     { ...body },
     { new: true },
@@ -71,10 +69,20 @@ const updateContact = async (contactId, body) => {
   return result;
 };
 
+const removeContact = async contactId => {
+  /*  const collection = await getCollection(db, 'contacts');
+  // const [record] = db.get('contacts').remove({ id: contactId }).write();
+  const { value: result } = await collection.findOneAndDelete({
+    _id: new ObjectId(contactId),
+  }); */
+  const result = await Contact.findByIdAndRemove({ _id: contactId });
+  return result;
+};
 module.exports = {
   listContacts,
   getContactById,
-  removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
+  removeContact,
 };
