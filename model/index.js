@@ -1,83 +1,88 @@
-// const fs = require('fs/promises')
+const Contact = require('./schemas/contact');
 
- const db = require('./db');
- const { v4: uuid } = require('uuid');
-// (MODEL cats.JS)
-
+/* const db = require('./db')
+   const { ObjectId} = require('mongodb');const getCollection = async (db, name) => {
+  const client = await db;
+  const collection = await client.db().collection(name);
+  return collection;
+}; */
 
 const listContacts = async () => {
-    return db.value();   // у еас уже есть json поэтому не нужен .get('contacts')
- }
+  //* const collection = await getCollection(db, 'contacts');
+  //* const results = collection.find({}).toArray(); // преобразуй наш  курсор в массив   return results
+  const results = await Contact.find({});
+  return results; // return db.get('contacts').value();
+};
 
-const getContactById = async (contactId) => {
-      return db.find({ id: contactId }).value();
-}
+const getContactById = async contactId => {
+  /* const collection = await getCollection(db, 'contacts');
+  // return db.find({ id: contactId }).value();
+  const [result] = await collection
+    .find({ _id: new ObjectId(contactId) })
+    .toArray();
+  console.log(result._id.getTimestamp()); // время создания */
+  const result = await Contact.findOne({ _id: contactId });
+  return result;
+};
 
-const removeContact = async (contactId) => {
-  const [record] = db.remove({ id: contactId }).write();
-  return record;
-}
+const addContact = async body => {
+  // create
+  /* const collection = await getCollection(db, 'contacts');
+  // const contactId = uuid();
+  const record = {
+    // id: contactId,
+    ...body,
+    // ...(body.isFavorite ? {} : { isFavorite: false }), *это всё за нас делает mongoose
+  };
+  const {
+    ops: [result],
+  } = await collection.insertOne(record); // db.get('contacts').push(record).write(); */
 
-const addContact = async (body) => {
-   const contactId = uuid();
-    const record = {
-        id: contactId,
-        ...body,
-    };
-    db.push(record).write();// .get('contacts') не нужно так как есть JSON;
-    return record;
-
-}
-
-
+  const result = await Contact.create(body);
+  return result; // return record;}
+};
 const updateContact = async (contactId, body) => {
-  const record = db.find({ id: contactId }).assign(body).value()
-  db.write()
-  return record.id ? record : null
-}
+  /* const collection = await getCollection(db, 'contacts');
+  // const record = db.find({ id: contactId }).assign(body).value()
+  // db.write()
+  // return record.id ? record : null
+  const { value: result } = await collection.findOneAndUpdete(
+    {
+      _id: new ObjectId(contactId),
+    },
+    { $set: body },
+    { returnOriginal: false },
+  ); */
+  const result = await Contact.findByIdAndUpdate(
+    { _id: contactId },
+    { ...body },
+    { new: true },
+  );
+  return result;
+};
+const updateStatusContact = async (contactId, body) => {
+  const result = await Contact.findByIdAndUpdate(
+    { _id: contactId },
+    { ...body },
+    { new: true },
+  );
+  return result;
+};
 
+const removeContact = async contactId => {
+  /*  const collection = await getCollection(db, 'contacts');
+  // const [record] = db.get('contacts').remove({ id: contactId }).write();
+  const { value: result } = await collection.findOneAndDelete({
+    _id: new ObjectId(contactId),
+  }); */
+  const result = await Contact.findByIdAndRemove({ _id: contactId });
+  return result;
+};
 module.exports = {
   listContacts,
   getContactById,
-  removeContact,
   addContact,
   updateContact,
-} 
-
-
-
-
-
-// // РАБОТА С ФАЙЛАМИ
- /* const fs = require('fs/promises')
-const path = require('path')
- 
-  const contactsPath = path.join(__dirname,
-  './model/contacts.json'
-)
-// getall
-const listContacts = async () => {
-  try {
-    const response = await fs.readFile(contactsPath);
-      const contacts = JSON.parse(response);
-    return contacts;
-  } catch (err) {
-    console.error(err.message);
-  }
-}
-
-const getContactById = async (contactId) => {}
-
-const removeContact = async (contactId) => {}
-
-const addContact = async (body) => {}
-
-const updateContact = async (contactId, body) => {}
-
-module.exports = {
-  listContacts,
-  getContactById,
+  updateStatusContact,
   removeContact,
-  addContact,
-  updateContact,
-} */
+};

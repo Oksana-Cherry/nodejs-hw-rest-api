@@ -13,6 +13,7 @@
 * npm i eslint-config-prettier ( дружба lintrc+prittierrc)
 * npm i eslint-plugin-json 
 * npm install joi (валидация)
+* npm install mongoose -S ( служит удобным средством для применения структурированной схемы к коллекции в MongoDB. )
 
 * в файле .eslintrc.js:
 extends: ['standard', 'plugin:json/recommended', 'prettier']
