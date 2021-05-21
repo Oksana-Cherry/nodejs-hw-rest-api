@@ -14,7 +14,7 @@ passport.use(
   new Strategy(opts, async (payload, done) => {
     // т.е payload расшифровать токен , в нем будет объект
     try {
-      const user = await Users.findById({ id: payload.id }); // найти юзера id
+      const user = await Users.findById(payload.id); // найти юзера id
       if (!user) {
         return done(new Error('User not found'), false); // не нашли, передать ошибку
       }

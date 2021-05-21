@@ -47,9 +47,9 @@ const loginRouter = async (req, res, next) => {
     }
     // если всё ок, отдать токен
 
-    const payload = { id: user.id };
+    const payload = { id: user._id };
     const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1w' });
-    await Users.updateToken(user.id, token);
+    await Users.updateToken(user._id, token);
     return res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,

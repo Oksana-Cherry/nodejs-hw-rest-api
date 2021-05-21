@@ -2,7 +2,7 @@
 
 - npm init -y
 - npm i
-- npm i express -E
+- npm i express -DE
 - npm i nodemon -DE (Он позволяет выполнять live reload сервера при разработке.)
 - npm i uuid (генерация уникального id )
 - npm i morgan (для протоколирования запросов)

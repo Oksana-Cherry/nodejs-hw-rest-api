@@ -8,12 +8,12 @@ const {
 } = require('../../../controllers/users.js');
 
 // @POST /users/signup
-router.post('./users/signup', signupRouter);
+router.post('/signup', signupRouter);
 
 // @POST /users/login
-router.post('./users/login', loginRouter);
+router.post('/login', loginRouter);
 
 // @POST / users / logout;
-router.post('./users/logout', logoutRouter);
+router.post('/logout', logoutRouter);
 
 module.exports = router;
