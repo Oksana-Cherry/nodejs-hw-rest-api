@@ -1,25 +1,11 @@
-const express = require('express'); // то что получили в app
-const router = express.Router();
-const Contacts = require('../../model/index');
-const {
-  validateAddContact,
-  validateUpdateContact,
-  validateStatusFavoriteContact,
-} = require('./validation');
+const Contacts = require('../model/index');
+const { HttpCode } = require('../helpers/constants');
 
-const { HttpCode } = require('../../helpers/constants');
-// const got = require('got')
-// require('dotenv').config()
-/*  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500 */
-
-// @ GET /api/contacts/*ничего не получает
+// @ GET /api/contacts/
 /* вызывает функцию listContacts для работы с json-файлом contacts.json
 возвращает массив всех контактов в json-формате со статусом 200 */
-router.get('/', async (_req, res, next) => {
+
+const listContactsRouter = async (_req, res, next) => {
   try {
     const contacts = await Contacts.listContacts();
     return res.status(HttpCode.OK).json({
@@ -30,12 +16,13 @@ router.get('/', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 // @ GET /api/contacts/:contactId
 // getContactById
-router.get('/:contactId', async (req, res, next) => {
+const getContactByIdRouter = async (req, res, next) => {
   try {
     const contact = await Contacts.getContactById(req.params.contactId);
+    console.log(contact);
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -51,10 +38,10 @@ router.get('/:contactId', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
 // @ POST /api/contacts
-router.post('/', validateAddContact, async (req, res, next) => {
+const addContactRouter = async (req, res, next) => {
   try {
     const contact = await Contacts.addContact(req.body);
     return res.status(HttpCode.CREATED).json({
@@ -68,10 +55,10 @@ router.post('/', validateAddContact, async (req, res, next) => {
     }
     next(error);
   }
-});
-// @ DELETE /api/contacts/:contactId
+};
 
-router.delete('/:contactId', async (req, res, next) => {
+// @ DELETE /api/contacts/:contactId
+const removeContactRouter = async (req, res, next) => {
   try {
     const contact = await Contacts.removeContact(req.params.contactId);
     if (contact) {
@@ -90,10 +77,10 @@ router.delete('/:contactId', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 // @ PUT /api/contacts/:contactId
 // updateContact
-router.put('/:contactId', validateUpdateContact, async (req, res, next) => {
+const updateContactRouter = async (req, res, next) => {
   try {
     const contact = await Contacts.updateContact(
       req.params.contactId,
@@ -114,38 +101,41 @@ router.put('/:contactId', validateUpdateContact, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
-
-router.patch(
-  '/:contactId/favorite',
-  validateStatusFavoriteContact,
-  async (req, res, next) => {
-    try {
-      if (!req.body.favorite) {
-        return res.status(HttpCode.BAD_REQUEST).json({
-          status: 'error',
-          code: HttpCode.BAD_REQUEST,
-          message: 'missing field favorite',
-        });
-      }
-      const contact = await Contacts.updateStatusContact(
-        req.params.contactId,
-        req.body,
-      );
-      if (contact) {
-        return res
-          .status(HttpCode.OK)
-          .json({ status: 'success', code: HttpCode.OK, data: { contact } });
-      }
-      return res.status(HttpCode.NOT_FOUND).json({
+};
+// @patch /api/contacts/:contactId/favorite
+const updateStatusContactRouter = async (req, res, next) => {
+  try {
+    if (!req.body.favorite) {
+      return res.status(HttpCode.BAD_REQUEST).json({
         status: 'error',
-        code: HttpCode.NOT_FOUND,
-        message: 'Not Found',
+        code: HttpCode.BAD_REQUEST,
+        message: 'missing field favorite',
       });
-    } catch (error) {
-      next(error);
     }
-  },
-);
-
-module.exports = router;
+    const contact = await Contacts.updateStatusContact(
+      req.params.contactId,
+      req.body,
+    );
+    if (contact) {
+      return res
+        .status(HttpCode.OK)
+        .json({ status: 'success', code: HttpCode.OK, data: { contact } });
+    }
+    return res.status(HttpCode.NOT_FOUND).json({
+      status: 'error',
+      code: HttpCode.NOT_FOUND,
+      message: 'Not Found',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// функции контроллеры
+module.exports = {
+  listContactsRouter,
+  getContactByIdRouter,
+  addContactRouter,
+  removeContactRouter,
+  updateContactRouter,
+  updateStatusContactRouter,
+};
