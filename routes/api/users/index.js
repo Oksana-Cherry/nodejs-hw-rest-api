@@ -1,19 +1,22 @@
 const express = require('express'); // то что получили в app
+const guard = require('../../../helpers/guard');
 const router = express.Router();
-
+const { validateSignup, validateLogin } = require('./validation');
 const {
   signupRouter,
   loginRouter,
   logoutRouter,
+  currentRouter,
 } = require('../../../controllers/users.js');
 
 // @POST /users/signup
-router.post('/signup', signupRouter);
+router.post('/signup', validateSignup, signupRouter);
 
 // @POST /users/login
-router.post('/login', loginRouter);
+router.post('/login', validateLogin, loginRouter);
 
 // @POST / users / logout;
-router.post('/logout', logoutRouter);
+router.post('/logout', guard, logoutRouter);
+router.post('/current', guard, currentRouter);
 
 module.exports = router;

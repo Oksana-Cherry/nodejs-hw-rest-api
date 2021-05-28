@@ -5,13 +5,18 @@ const { HttpCode } = require('../helpers/constants');
 /* вызывает функцию listContacts для работы с json-файлом contacts.json
 возвращает массив всех контактов в json-формате со статусом 200 */
 
-const listContactsRouter = async (_req, res, next) => {
+const listContactsRouter = async (req, res, next) => {
   try {
-    const contacts = await Contacts.listContacts();
+    // console.log(req.user);
+    const userId = req.user.id;
+    const { contacts, total, limit, page } = await Contacts.listContacts(
+      userId,
+      req.query,
+    );
     return res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
-      data: { contacts },
+      data: { total, contacts, limit, page },
     });
   } catch (error) {
     next(error);
@@ -21,7 +26,8 @@ const listContactsRouter = async (_req, res, next) => {
 // getContactById
 const getContactByIdRouter = async (req, res, next) => {
   try {
-    const contact = await Contacts.getContactById(req.params.contactId);
+    const userId = req.user.id;
+    const contact = await Contacts.getContactById(userId, req.params.contactId);
     console.log(contact);
     if (contact) {
       return res.status(HttpCode.OK).json({
@@ -43,7 +49,11 @@ const getContactByIdRouter = async (req, res, next) => {
 // @ POST /api/contacts
 const addContactRouter = async (req, res, next) => {
   try {
-    const contact = await Contacts.addContact(req.body);
+    const userId = req.user.id;
+    const contact = await Contacts.addContact({
+      ...req.body,
+      owner: userId,
+    });
     return res.status(HttpCode.CREATED).json({
       status: 'success',
       code: HttpCode.CREATED,
@@ -60,7 +70,8 @@ const addContactRouter = async (req, res, next) => {
 // @ DELETE /api/contacts/:contactId
 const removeContactRouter = async (req, res, next) => {
   try {
-    const contact = await Contacts.removeContact(req.params.contactId);
+    const userId = req.user.id;
+    const contact = await Contacts.removeContact(userId, req.params.contactId);
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -72,7 +83,7 @@ const removeContactRouter = async (req, res, next) => {
     return res.status(HttpCode.NOT_FOUND).json({
       status: 'error',
       code: HttpCode.NOT_FOUND,
-      message: 'Not Found',
+      message: 'Contact deleted',
     });
   } catch (error) {
     next(error);
@@ -82,7 +93,9 @@ const removeContactRouter = async (req, res, next) => {
 // updateContact
 const updateContactRouter = async (req, res, next) => {
   try {
+    const userId = req.user.id;
     const contact = await Contacts.updateContact(
+      userId,
       req.params.contactId,
       req.body,
     );
@@ -105,6 +118,12 @@ const updateContactRouter = async (req, res, next) => {
 // @patch /api/contacts/:contactId/favorite
 const updateStatusContactRouter = async (req, res, next) => {
   try {
+    const userId = req.user.id;
+    const contact = await Contacts.updateContact(
+      userId,
+      req.params.contactId,
+      req.body,
+    );
     if (!req.body.favorite) {
       return res.status(HttpCode.BAD_REQUEST).json({
         status: 'error',
@@ -112,10 +131,6 @@ const updateStatusContactRouter = async (req, res, next) => {
         message: 'missing field favorite',
       });
     }
-    const contact = await Contacts.updateStatusContact(
-      req.params.contactId,
-      req.body,
-    );
     if (contact) {
       return res
         .status(HttpCode.OK)

@@ -39,13 +39,13 @@ const userSchema = new Schema(
 );
 // сделать hash перед записью в базу данных
 userSchema.pre('save', async function (next) {
-  if (this.isModifitd('password')) {
+  if (this.isModified('password')) {
     const salt = await bcrypt.genSalt(SALT_FACTOR);
     this.password = await bcrypt.hash(this.password, salt);
   }
   next();
 });
-userSchema.methods.validatPassword = async function (password) {
+userSchema.methods.validPassword = async function (password) {
   return await bcrypt.compare(String(password), this.password);
 };
 const User = mongoose.model('user', userSchema);

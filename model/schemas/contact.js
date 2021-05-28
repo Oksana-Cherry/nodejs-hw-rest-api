@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema, SchemaTypes } = mongoose;
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const contactSchema = new Schema(
   {
@@ -19,23 +20,26 @@ const contactSchema = new Schema(
       required: [true, 'Set email for contact'],
       unique: true,
     },
+    subscription: {
+      type: String,
+      default: 'free',
+    },
     favorite: {
       type: Boolean,
       default: false,
     },
 
-    /* password: { GOOGLE
-      type: String,
-      required: [true, 'Set password for contact'],
-      unique: true,
-      minlength: 5,
-    }, */
     owner: {
       type: SchemaTypes.ObjectId, // тут id из mongoose
       ref: 'user', // ссылка на коллекцию
     },
   },
-  /*  {
+  {
+    versionKey: false,
+    timestamps: true,
+  },
+);
+/*  {
     versionKey: false,
     timestamps: true,
     toObject: {
@@ -45,9 +49,10 @@ const contactSchema = new Schema(
         return ret;
       },
     },
-  }, */
-);
+  }, 
+); */
 
+contactSchema.plugin(mongoosePaginate);
 const Contact = mongoose.model('contact', contactSchema);
 
 module.exports = Contact;

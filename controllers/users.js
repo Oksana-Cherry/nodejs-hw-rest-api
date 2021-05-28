@@ -6,7 +6,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const signupRouter = async (req, res, next) => {
   try {
-    const user = await Users.finByEmail(req.body.email);
+    const user = await Users.findByEmail(req.body.email);
     if (user) {
       // если такого пользователя нашли, тогда отказ
       return res.status(HttpCode.CONFLICT).json({
@@ -34,7 +34,7 @@ const signupRouter = async (req, res, next) => {
 const loginRouter = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await Users.finByEmail(email);
+    const user = await Users.findByEmail(email);
     const isValidPassword = await user?.validPassword(password);
     if (!user || !isValidPassword) {
       // если такого пользователя не нашли, тогда отказ
@@ -47,23 +47,61 @@ const loginRouter = async (req, res, next) => {
     }
     // если всё ок, отдать токен
 
-    const payload = { id: user._id };
+    const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1w' });
-    await Users.updateToken(user._id, token);
+    await Users.updateToken(user.id, token);
+
     return res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
       data: {
         token,
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
       },
     });
   } catch (e) {
     next(e);
   }
 };
-const logoutRouter = async (req, res, next) => {};
+
+const logoutRouter = async (req, res, next) => {
+  await Users.updateToken(req.user.id, null);
+  return res.status(HttpCode.NO_CONTENT).json({});
+};
+
+// /current
+const currentRouter = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const current = await Users.findById(userId);
+
+    if (current) {
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: {
+          email: current.email,
+          subscription: current.subscription,
+        },
+      });
+    } else {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: 'error',
+        code: HttpCode.UNAUTHORIZED,
+        data: 'Unauthorized',
+        message: 'Not authorized',
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
 module.exports = {
   signupRouter,
   loginRouter,
   logoutRouter,
+  currentRouter,
 };

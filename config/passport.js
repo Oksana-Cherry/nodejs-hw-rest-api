@@ -5,18 +5,18 @@ const Users = require('../model/users');
 require('dotenv').config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-const opts = {
+const params = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // в заголовках  Bearer JWT_TOKEN
   secretOrKey: JWT_SECRET_KEY,
 };
 
 passport.use(
-  new Strategy(opts, async (payload, done) => {
+  new Strategy(params, async (payload, done) => {
     // т.е payload расшифровать токен , в нем будет объект
     try {
       const user = await Users.findById(payload.id); // найти юзера id
       if (!user) {
-        return done(new Error('User not found'), false); // не нашли, передать ошибку
+        return done(new Error('Not authorized'), false); // не нашли, передать ошибку
       }
 
       if (!user.token) {

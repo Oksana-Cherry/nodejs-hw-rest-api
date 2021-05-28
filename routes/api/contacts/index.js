@@ -43,6 +43,7 @@ router.put('/:contactId', guard, validateUpdateContact, updateContactRouter);
 // @patch /api/contacts/:contactId/favorite
 router.patch(
   '/:contactId/favorite',
+  guard,
   validateStatusFavoriteContact,
   updateStatusContactRouter,
 );

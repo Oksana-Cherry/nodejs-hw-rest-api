@@ -1,9 +1,10 @@
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
-
+const boolParser = require('express-query-boolean');
+const helmet = require('helmet');
+const limiter = require('./helpers/limiter');
 const { HttpCode } = require('./helpers/constants');
-
 const contactsRouter = require('./routes/api/contacts'); // catsROUTER
 const userRouter = require('./routes/api/users');
 
@@ -11,9 +12,14 @@ const app = express(); // создали Экземпляр
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 // app.use(logger('combined'))//
+app.use(helmet());
+
+//  apply to all requests
+app.use(limiter);
 app.use(logger(formatsLogger));
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: 15000 }));
+app.use(boolParser());
 
 app.use('/api/users', userRouter);
 app.use('/api/contacts', contactsRouter); // роутер подключаем как Middleware(функции, которые последовательно вызываются в процессе обновления контейнера)

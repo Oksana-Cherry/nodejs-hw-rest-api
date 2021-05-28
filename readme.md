@@ -22,6 +22,11 @@
 * npm install passport-jwt (валидирует jwt токены)
 * npm i jsonwebtoken (создаёт токены)
 * npm i bcryptjs (шифровать пороль(хеш))
+* npm install mongoose-paginate-v2
+* npm i express-query-boolean
+* npm i helmet ()
+
+---cloudflare защита от dos-отак, когда много обращений(1-сайт)
 
 - в файле .eslintrc.js: extends: ['standard', 'plugin:json/recommended',
   'prettier']
