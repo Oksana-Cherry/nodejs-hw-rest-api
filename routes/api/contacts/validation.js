@@ -16,21 +16,19 @@ const schemaAddContact = Joi.object({
         .min(1900)
         .max(2013), */
   // строкой , кол-во символов, и обязательное поле  username
-  name: Joi.string().alphanum().min(3).max(30).required(),
+  name: Joi.string().min(3).max(30).required(),
   email: Joi.string().required(), // .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })  // кол-во символов , и какие символы
   phone: Joi.string()
     .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
     .required(), // .number().integer().positive().min(4).max(10).required(),
-  // favorite: Joi.boolean().optional(),
 });
 
 const schemaUpdateContact = Joi.object({
-  name: Joi.string().alphanum().min(3).max(30).optional(),
+  name: Joi.string().min(3).max(30).optional(),
   email: Joi.string().optional(),
   phone: Joi.string()
     .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
     .optional(), // .number().integer().positive().min(4).max(10).optional(),
-  // favorite: Joi.boolean().optional(),
 });
 
 const schemaStatusFavoriteContact = Joi.object({
@@ -42,7 +40,6 @@ const validate = async (schema, body, next) => {
     await schema.validateAsync(body);
     next();
   } catch (err) {
-    // const [{ message }] = err.details;
     next({ status: 400, message: `Filed: ${err.message.replace(/"/g, '')}` });
   }
 };
