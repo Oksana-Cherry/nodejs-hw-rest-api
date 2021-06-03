@@ -7,7 +7,9 @@ const {
   loginRouter,
   logoutRouter,
   currentRouter,
+  avatars,
 } = require('../../../controllers/users.js');
+const upload = require('../../../helpers/upload');
 
 // @POST /users/signup
 router.post('/signup', validateSignup, signupRouter);
@@ -18,5 +20,6 @@ router.post('/login', validateLogin, loginRouter);
 // @POST / users / logout;
 router.post('/logout', guard, logoutRouter);
 router.post('/current', guard, currentRouter);
+router.patch('/avatars', [guard, upload.single('avatar')], avatars);
 
 module.exports = router;

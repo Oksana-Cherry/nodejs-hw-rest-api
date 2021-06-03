@@ -25,6 +25,8 @@
 * npm install mongoose-paginate-v2
 * npm i express-query-boolean
 * npm i helmet ()
+* npm install --save multer
+* npm i jimp
 
 ---cloudflare защита от dos-отак, когда много обращений(1-сайт)
 
