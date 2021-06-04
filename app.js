@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('morgan');
+const path = require('path');
 const cors = require('cors');
 const boolParser = require('express-query-boolean');
 const helmet = require('helmet');
@@ -13,6 +14,9 @@ const app = express(); // создали Экземпляр
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 // app.use(logger('combined'))//
 app.use(helmet());
+require('dotenv').config();
+const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // process.env.AVATARS_OF_USERS;
+app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 //  apply to all requests
 app.use(limiter);

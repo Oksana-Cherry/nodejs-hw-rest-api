@@ -1,4 +1,4 @@
-const { fs } = require('fs/promises');
+const fs = require('fs/promises');
 const path = require('path');
 const Jimp = require('jimp');
 const createFolderIsNotExist = require('../helpers/create-dir');

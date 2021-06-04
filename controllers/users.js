@@ -108,7 +108,7 @@ const currentRouter = async (req, res, next) => {
 const avatars = async (req, res, next) => {
   try {
     const id = req.user.id;
-    const tmp = new UploadAvatar(AVATARS_OF_USERS);
+    const tmp = new UploadAvatar(AVATARS_OF_USERS); // path.join('public', process.env.AVATARS_OF_USERS);
     const avatarURL = await tmp.saveAvatarToStatic({
       idUser: id,
       pathFile: req.file.path,
