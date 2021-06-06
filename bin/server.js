@@ -8,7 +8,7 @@ require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // process.env.AVATARS_OF_USERS;
-
+// const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
 db.then(() => {
   app.listen(PORT, async () => {
     await createFolderIsNotExist(UPLOAD_DIR);

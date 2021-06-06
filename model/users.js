@@ -19,16 +19,16 @@ const updateAvatar = async (id, avatar) => {
   return await User.updateOne({ _id: id }, { avatar });
 };
 
-const updateUser = async (id, body) => {
+/* const updateUser = async (id, body) => {
   return await User.updateOne({ _id: id }, { ...body });
-};
+}; */
 module.exports = {
   findById,
   findByEmail,
   create,
   updateToken,
   updateAvatar,
-  updateUser,
+  // updateUser,
 };
 /* < form  action = " / profile " method = " post " enctype = " multipart / form-data " > 
   < input  type = " file " name = " avatar " />

@@ -7,6 +7,7 @@ const UploadAvatar = require('../services/upload-avatars-local');
 require('dotenv').config();
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+// const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
 const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS);
 
 const signupRouter = async (req, res, next) => {
@@ -22,15 +23,17 @@ const signupRouter = async (req, res, next) => {
     }
     // если нет,создадим нового пользователя
     const newUser = await Users.create(req.body);
-    const { id, email, subscription, avatarURL } = newUser;
+    const { id, name, email, subscription, avatar } = newUser;
     return res.status(HttpCode.CREATED).json({
+      /// ???????????????????????
       status: 'success',
       code: HttpCode.CREATED,
       data: {
         id,
+        name,
         email,
         subscription,
-        avatarURL,
+        avatar,
       },
     });
   } catch (e) {
@@ -112,7 +115,7 @@ const avatars = async (req, res, next) => {
     const avatarURL = await tmp.saveAvatarToStatic({
       idUser: id,
       pathFile: req.file.path,
-      name: req.file.filеname,
+      name: req.file.filename,
       oldFile: req.user.avatar, // останется в старом поле
     });
     await Users.updateAvatar(id, avatarURL);

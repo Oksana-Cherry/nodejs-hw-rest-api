@@ -22,7 +22,7 @@ const userSchema = new Schema(
       unique: true,
       minlength: 5,
     },
-    avatarURL: {
+    avatar: {
       type: String,
       default: function () {
         return gravatar.url(this.email, { s: 250 }, true); // если false это http (true=https)

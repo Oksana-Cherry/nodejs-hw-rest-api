@@ -19,7 +19,7 @@ router.post('/login', validateLogin, loginRouter);
 
 // @POST / users / logout;
 router.post('/logout', guard, logoutRouter);
-router.post('/current', guard, currentRouter);
+router.get('/current', guard, currentRouter);
 router.patch('/avatars', [guard, upload.single('avatar')], avatars);
 
 module.exports = router;

@@ -16,6 +16,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 app.use(helmet());
 require('dotenv').config();
 const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // process.env.AVATARS_OF_USERS;
+// const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
 app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 //  apply to all requests
