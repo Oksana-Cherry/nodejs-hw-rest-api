@@ -1,14 +1,23 @@
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2;
+const { promisify } = require('util');
+require('dotenv').config();
 const Users = require('../model/users');
 const { HttpCode } = require('../helpers/constants');
 // const fs = require('fs').promises;
-const path = require('path');
-const UploadAvatar = require('../services/upload-avatars-local');
-require('dotenv').config();
+// const path = require('path');
+// const UploadAvatar = require('../services/upload-avatars-local');
+const UploadAvatar = require('../services/upload-avatars-cloud');
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 // const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
-const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS);
+// const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS);
+// облачное хранилище cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 const signupRouter = async (req, res, next) => {
   try {
@@ -111,15 +120,21 @@ const currentRouter = async (req, res, next) => {
 const avatars = async (req, res, next) => {
   try {
     const id = req.user.id;
-    const tmp = new UploadAvatar(AVATARS_OF_USERS); // path.join('public', process.env.AVATARS_OF_USERS);
+    /* const tmp = new UploadAvatar(AVATARS_OF_USERS); 
     const avatarURL = await tmp.saveAvatarToStatic({
       idUser: id,
       pathFile: req.file.path,
       name: req.file.filename,
       oldFile: req.user.avatar, // останется в старом поле
-    });
-    await Users.updateAvatar(id, avatarURL);
-    console.log(req.hostname);
+    }); */
+    const uploadCloud = promisify(cloudinary.uploader.upload);
+    const tmp = new UploadAvatar(uploadCloud);
+    const { userIdImg, avatarURL } = await tmp.saveAvatarToCloud(
+      req.file.path,
+      req.user.userIdImg,
+    );
+    await Users.updateAvatar(id, avatarURL, userIdImg);
+    //  console.log(req.hostname, req.post);
     return res.json({
       status: 'success',
       code: HttpCode.OK,

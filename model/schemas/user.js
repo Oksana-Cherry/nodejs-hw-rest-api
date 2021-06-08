@@ -28,7 +28,11 @@ const userSchema = new Schema(
         return gravatar.url(this.email, { s: 250 }, true); // если false это http (true=https)
       },
     },
-    // starter", "pro", "business
+    userIdImg: {
+      type: String,
+      default: null,
+    },
+
     subscription: {
       type: String,
       enum: {

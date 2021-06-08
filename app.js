@@ -15,8 +15,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 // app.use(logger('combined'))//
 app.use(helmet());
 require('dotenv').config();
-const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // process.env.AVATARS_OF_USERS;
-// const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
+const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // статика
 app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 //  apply to all requests
@@ -27,7 +26,9 @@ app.use(express.json({ limit: 15000 }));
 app.use(boolParser());
 
 app.use('/api/users', userRouter);
-app.use('/api/contacts', contactsRouter); // роутер подключаем как Middleware(функции, которые последовательно вызываются в процессе обновления контейнера)
+// роутер подключаем как Middleware(функции, которые последовательно
+// вызываются в процессе обновления контейнера)
+app.use('/api/contacts', contactsRouter);
 /*  OK: 200,
   CREATED: 201,
   BAD_REQUEST: 400,
