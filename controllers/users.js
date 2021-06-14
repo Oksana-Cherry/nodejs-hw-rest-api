@@ -33,6 +33,16 @@ const signupRouter = async (req, res, next) => {
     // если нет,создадим нового пользователя
     const newUser = await Users.create(req.body);
     const { id, name, email, subscription, avatar } = newUser;
+    //, verifyToken
+    /* try {
+      const emailService = new EmailService(
+        process.env.NODE_ENV,
+        new CreateSenderSendgrid(),
+      )
+      await emailService.sendVerifyPasswordEmail(verifyToken, email, name)
+    } catch (e) {
+      console.log(e.message)
+    }*/
     return res.status(HttpCode.CREATED).json({
       /// ???????????????????????
       status: 'success',
@@ -64,7 +74,13 @@ const loginRouter = async (req, res, next) => {
       });
     }
     // если всё ок, отдать токен
-
+    /*  if (!user.verify) {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: 'error',
+        code: HttpCode.UNAUTHORIZED,
+        message: 'Check email for verification',
+      })
+    } */
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1w' });
     await Users.updateToken(user.id, token);
@@ -89,7 +105,6 @@ const logoutRouter = async (req, res, next) => {
   await Users.updateToken(req.user.id, null);
   return res.status(HttpCode.NO_CONTENT).json({});
 };
-
 // /current
 const currentRouter = async (req, res, next) => {
   try {

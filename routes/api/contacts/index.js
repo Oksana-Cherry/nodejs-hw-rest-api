@@ -14,13 +14,8 @@ const {
   validateAddContact,
   validateStatusFavoriteContact,
   validateUpdateContact,
+  validateObjectId,
 } = require('./validation');
-
-/*  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500 */
 
 // @ GET /api/contacts/*ничего не получает
 /* вызывает функцию listContacts для работы с json-файлом contacts.json
@@ -28,22 +23,29 @@ const {
 router.get('/', guard, listContactsRouter);
 // @ GET /api/contacts/:contactId
 // getContactById
-router.get('/:contactId', guard, getContactByIdRouter);
+router.get('/:contactId', guard, validateObjectId, getContactByIdRouter);
 
 // @ POST /api/contacts
 router.post('/', guard, validateAddContact, addContactRouter);
 
 // @ DELETE /api/contacts/:contactId
-router.delete('/:contactId', guard, removeContactRouter);
+router.delete('/:contactId', guard, validateObjectId, removeContactRouter);
 
 // @ PUT /api/contacts/:contactId
 // updateContact
-router.put('/:contactId', guard, validateUpdateContact, updateContactRouter);
+router.put(
+  '/:contactId',
+  guard,
+  validateObjectId,
+  validateUpdateContact,
+  updateContactRouter,
+);
 
 // @patch /api/contacts/:contactId/favorite
 router.patch(
   '/:contactId/favorite',
   guard,
+  validateObjectId,
   validateStatusFavoriteContact,
   updateStatusContactRouter,
 );

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-
+const mongoose = require('mongoose');
 const schemaAddContact = Joi.object({
   /* password: Joi.string()   // строкой, накладывает патерн регулярки
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
@@ -53,4 +53,10 @@ module.exports.validateUpdateContact = (req, _res, next) => {
 };
 module.exports.validateStatusFavoriteContact = (req, _res, next) => {
   return validate(schemaStatusFavoriteContact, req.body, next);
+};
+module.exports.validateObjectId = (req, _res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.contactId)) {
+    return next({ status: 400, message: `ObjectId is not valid` });
+  }
+  next();
 };

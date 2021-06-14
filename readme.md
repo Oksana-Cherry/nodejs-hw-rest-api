@@ -27,6 +27,9 @@
 * npm i helmet ()
 * npm install --save multer
 * npm i jimp
+* npm install --save-dev jest ( unit-тесты)
+* npm install supertest --save-dev (для тестирования HTTP, позволяет запускать и
+  проверять)
 
 ---cloudflare защита от dos-отак, когда много обращений(1-сайт)
 
