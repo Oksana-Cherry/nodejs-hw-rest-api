@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const gravatar = require('gravatar');
 const { Subscription } = require('../../helpers/constants');
 const bcrypt = require('bcryptjs');
 const SALT_FACTOR = 6;
@@ -21,7 +22,17 @@ const userSchema = new Schema(
       unique: true,
       minlength: 5,
     },
-    // starter", "pro", "business
+    avatar: {
+      type: String,
+      default: function () {
+        return gravatar.url(this.email, { s: 250 }, true); // если false это http (true=https)
+      },
+    },
+    userIdImg: {
+      type: String,
+      default: null,
+    },
+
     subscription: {
       type: String,
       enum: {

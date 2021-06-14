@@ -1,8 +1,13 @@
-// const {MongoClient} =require('mongodb')
-// const { connect } = require('mongodb')
 const mongoose = require('mongoose');
 require('dotenv').config();
-const uriDb = process.env.URI_DB;
+
+let uriDb = null;
+
+if (process.env.NODE_ENV === 'test') {
+  uriDb = process.env.URI_DB_TEST;
+} else {
+  uriDb = process.env.URI_DB;
+}
 
 const db = mongoose.connect(uriDb, {
   useNewUrlParser: true,
@@ -12,15 +17,15 @@ const db = mongoose.connect(uriDb, {
   poolSize: 5,
 });
 // события кодга подключаемся к базе данных
-mongoose.connection.on('connected', () => {
+/* mongoose.connection.on('connected', () => {
   console.log('Database connection successful');
-});
+}); */
 mongoose.connection.on('error', () => {
   console.log(`Mongoose connection error: ${Error.message}`);
 });
-mongoose.connection.on('disconnected', () => {
+/* mongoose.connection.on('disconnected', () => {
   console.log('Mongoose disconnected');
-});
+});*/
 
 process.on('SIGINT', async () => {
   /* const client = await db

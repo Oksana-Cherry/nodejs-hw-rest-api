@@ -1,8 +1,23 @@
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2;
+const { promisify } = require('util');
+require('dotenv').config();
 const Users = require('../model/users');
 const { HttpCode } = require('../helpers/constants');
-require('dotenv').config();
+// const fs = require('fs').promises;
+// const path = require('path');
+// const UploadAvatar = require('../services/upload-avatars-local');
+const UploadAvatar = require('../services/upload-avatars-cloud');
+
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+// const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
+// const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS);
+// облачное хранилище cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 const signupRouter = async (req, res, next) => {
   try {
@@ -17,14 +32,27 @@ const signupRouter = async (req, res, next) => {
     }
     // если нет,создадим нового пользователя
     const newUser = await Users.create(req.body);
-    const { id, email, subscription } = newUser;
+    const { id, name, email, subscription, avatar } = newUser;
+    //, verifyToken
+    /* try {
+      const emailService = new EmailService(
+        process.env.NODE_ENV,
+        new CreateSenderSendgrid(),
+      )
+      await emailService.sendVerifyPasswordEmail(verifyToken, email, name)
+    } catch (e) {
+      console.log(e.message)
+    }*/
     return res.status(HttpCode.CREATED).json({
+      /// ???????????????????????
       status: 'success',
       code: HttpCode.CREATED,
       data: {
         id,
+        name,
         email,
         subscription,
+        avatar,
       },
     });
   } catch (e) {
@@ -46,7 +74,13 @@ const loginRouter = async (req, res, next) => {
       });
     }
     // если всё ок, отдать токен
-
+    /*  if (!user.verify) {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: 'error',
+        code: HttpCode.UNAUTHORIZED,
+        message: 'Check email for verification',
+      })
+    } */
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1w' });
     await Users.updateToken(user.id, token);
@@ -71,7 +105,6 @@ const logoutRouter = async (req, res, next) => {
   await Users.updateToken(req.user.id, null);
   return res.status(HttpCode.NO_CONTENT).json({});
 };
-
 // /current
 const currentRouter = async (req, res, next) => {
   try {
@@ -99,9 +132,38 @@ const currentRouter = async (req, res, next) => {
     next(e);
   }
 };
+const avatars = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    /* const tmp = new UploadAvatar(AVATARS_OF_USERS); 
+    const avatarURL = await tmp.saveAvatarToStatic({
+      idUser: id,
+      pathFile: req.file.path,
+      name: req.file.filename,
+      oldFile: req.user.avatar, // останется в старом поле
+    }); */
+    const uploadCloud = promisify(cloudinary.uploader.upload);
+    const tmp = new UploadAvatar(uploadCloud);
+    const { userIdImg, avatarURL } = await tmp.saveAvatarToCloud(
+      req.file.path,
+      req.user.userIdImg,
+    );
+    await Users.updateAvatar(id, avatarURL, userIdImg);
+    //  console.log(req.hostname, req.post);
+    return res.json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: { avatarURL },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signupRouter,
   loginRouter,
   logoutRouter,
   currentRouter,
+  avatars,
 };

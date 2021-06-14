@@ -1,33 +1,34 @@
 const express = require('express');
 const logger = require('morgan');
+const path = require('path');
 const cors = require('cors');
 const boolParser = require('express-query-boolean');
 const helmet = require('helmet');
 const limiter = require('./helpers/limiter');
 const { HttpCode } = require('./helpers/constants');
 const contactsRouter = require('./routes/api/contacts'); // catsROUTER
-const userRouter = require('./routes/api/users');
+const userRouter = require('./routes/api/users/');
 
 const app = express(); // создали Экземпляр
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 // app.use(logger('combined'))//
 app.use(helmet());
+require('dotenv').config();
+const AVATARS_OF_USERS = path.join('public', process.env.AVATARS_OF_USERS); // статика
+app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 //  apply to all requests
 app.use(limiter);
-app.use(logger(formatsLogger));
+app.get('env') !== 'test' && app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json({ limit: 15000 }));
 app.use(boolParser());
 
 app.use('/api/users', userRouter);
-app.use('/api/contacts', contactsRouter); // роутер подключаем как Middleware(функции, которые последовательно вызываются в процессе обновления контейнера)
-/*  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500 */
+// роутер подключаем как Middleware(функции, которые последовательно
+// вызываются в процессе обновления контейнера)
+app.use('/api/contacts', contactsRouter);
 
 app.use((_req, res) => {
   res.status(HttpCode.NOT_FOUND).json({
@@ -42,8 +43,8 @@ app.use((err, _req, res, _next) => {
   const code = err.status || HttpCode.INTERNAL_SERVER_ERROR;
   const status = err.status ? 'error' : 'fail';
   res.status(code).json({
-    status: status,
-    code: code,
+    status,
+    code,
     message: err.message,
   });
 });

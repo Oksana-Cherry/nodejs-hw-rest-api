@@ -10,7 +10,7 @@ const listContacts = async (userId, query) => {
     favorite = null,
   } = query;
 
-  console.log(Boolean(favorite));
+  // console.log(Boolean(favorite));
   const optionsSerch = { owner: userId };
   if (favorite !== null) {
     optionsSerch.favorite = favorite;
