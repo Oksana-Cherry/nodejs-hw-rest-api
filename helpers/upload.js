@@ -20,10 +20,9 @@ const upload = multer({
   limits: { fileSize: 2000000 },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.includes('image')) {
-      // Функция должна вызывать `cb` с булевым значением,
-      // которое показывает, следует ли принять файл
-      // Чтобы отклонить, прокиньте в аргументы `false` так:
-      cb(null, false);
+      const error = new Error('Bla bla');
+      error.status = 400;
+      cb(error);
       return;
     }
 

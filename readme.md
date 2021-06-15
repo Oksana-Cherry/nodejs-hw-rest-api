@@ -31,7 +31,10 @@
 * npm install supertest --save-dev (для тестирования HTTP, позволяет запускать и
   проверять)
 
----cloudflare защита от dos-отак, когда много обращений(1-сайт)
+* npm install nodemailer @sendgrid
+* npm i nanoid
+* npm install mailgen --save (генерация писем) ---cloudflare защита от dos-отак,
+  когда много обращений(1-сайт)
 
 - в файле .eslintrc.js: extends: ['standard', 'plugin:json/recommended',
   'prettier']

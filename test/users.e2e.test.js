@@ -36,15 +36,15 @@ describe('E2E test the routes api/users', () => {
     expect(res.body).toBeDefined();
   });
 
-  /* test('should response 200  login user', async () => {
+  test('should response 200  login user', async () => {
     const res = await request(app)
       .post('/api/users/login')
       .set('Authorization', `Bearer ${token}`)
-      .send(newTestUser);
+      .send({ email: newTestUser.email, password: newTestUser.password }); // .send(newTestUser);
     expect(res.status).toEqual(HttpCode.OK);
     expect(res.body).toBeDefined();
     token = res.body.data.token;
-  });*/
+  });
 
   test('should response 401  login user', async () => {
     const res = await request(app)
@@ -55,7 +55,7 @@ describe('E2E test the routes api/users', () => {
     expect(res.body).toBeDefined();
   });
 
-  /* test('should response 200  upload avatar user', async () => {
+  test('should response 200  upload avatar user', async () => {
     const buf = await fs.readFile('./test/data/default-avatar-female.jpg');
     const res = await request(app)
       .patch('/api/users/avatars')
@@ -63,6 +63,6 @@ describe('E2E test the routes api/users', () => {
       .attach('avatar', buf, 'default-avatar-female.jpg');
     expect(res.status).toEqual(HttpCode.OK);
     expect(res.body).toBeDefined();
-    expect(res.body.data.avatarURL).toBeDefined(secureUrl);
-  }); */
+    expect(res.body.data.avatarURL).toEqual('secureUrl');
+  });
 });

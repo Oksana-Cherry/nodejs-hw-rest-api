@@ -23,6 +23,10 @@ passport.use(
         return done(null, false); // нет токена , возвращаем без ошибки,
       }
 
+      if (!user.verify) {
+        return done(null, false);
+      }
+
       return done(null, user); // вернём если всё хорошо
     } catch (err) {
       return done(err, false);
