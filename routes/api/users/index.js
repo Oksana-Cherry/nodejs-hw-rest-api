@@ -8,8 +8,13 @@ const {
   logoutRouter,
   currentRouter,
   avatars,
+  verify,
+  repeatSendEmailVerify,
 } = require('../../../controllers/users.js');
 const upload = require('../../../helpers/upload');
+
+router.get('/verify/:token', verify);
+router.post('/verify', repeatSendEmailVerify);
 
 // @POST /users/signup
 router.post('/signup', validateSignup, signupRouter);

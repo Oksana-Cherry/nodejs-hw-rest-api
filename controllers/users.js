@@ -8,6 +8,11 @@ const { HttpCode } = require('../helpers/constants');
 // const path = require('path');
 // const UploadAvatar = require('../services/upload-avatars-local');
 const UploadAvatar = require('../services/upload-avatars-cloud');
+const EmailService = require('../services/email');
+const {
+  CreateSenderSendgrid,
+  CreateSenderNodemailer,
+} = require('../services/sender-email');
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 // const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
@@ -32,17 +37,18 @@ const signupRouter = async (req, res, next) => {
     }
     // если нет,создадим нового пользователя
     const newUser = await Users.create(req.body);
-    const { id, name, email, subscription, avatar } = newUser;
-    //, verifyToken
-    /* try {
+    const { id, name, email, subscription, avatar, verifyToken } = newUser;
+    // TODO: send email
+    try {
       const emailService = new EmailService(
         process.env.NODE_ENV,
         new CreateSenderSendgrid(),
-      )
-      await emailService.sendVerifyPasswordEmail(verifyToken, email, name)
+      );
+      await emailService.sendVerifyPasswordEmail(verifyToken, email, name);
     } catch (e) {
-      console.log(e.message)
-    }*/
+      console.log(e.message); //спрятать ошибку
+    }
+
     return res.status(HttpCode.CREATED).json({
       /// ???????????????????????
       status: 'success',
@@ -65,6 +71,7 @@ const loginRouter = async (req, res, next) => {
     const user = await Users.findByEmail(email);
     const isValidPassword = await user?.validPassword(password);
     if (!user || !isValidPassword) {
+      //|| !user.verify
       // если такого пользователя не нашли, тогда отказ
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: 'error',
@@ -73,14 +80,14 @@ const loginRouter = async (req, res, next) => {
         message: 'Email or password is wrong',
       });
     }
-    // если всё ок, отдать токен
-    /*  if (!user.verify) {
+    if (!user.verify) {
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: 'error',
         code: HttpCode.UNAUTHORIZED,
         message: 'Check email for verification',
-      })
-    } */
+      });
+    }
+    // если всё ок, отдать токен
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1w' });
     await Users.updateToken(user.id, token);
@@ -160,10 +167,68 @@ const avatars = async (req, res, next) => {
   }
 };
 
+const verify = async (req, res, next) => {
+  try {
+    const user = await Users.getUserByVerifyToken(req.params.token);
+    // console.log(contact);
+    if (user) {
+      await Users.updateVerifyToken(user.id, true, null);
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        message: 'Verification successful!',
+      });
+    }
+    return res.status(HttpCode.NOT_FOUND).json({
+      status: 'error',
+      code: HttpCode.NOT_FOUND,
+      message: 'User not found with verification token.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const repeatSendEmailVerify = async (req, res, next) => {
+  const user = await Users.findByEmail(req.body.email);
+  if (user) {
+    const { name, email, verifyToken, verify } = user;
+    if (!verify) {
+      try {
+        const emailService = new EmailService(
+          process.env.NODE_ENV,
+          new CreateSenderNodemailer(),
+        );
+        await emailService.sendVerifyPasswordEmail(verifyToken, email, name);
+        return res.status(HttpCode.OK).json({
+          status: 'success',
+          code: HttpCode.OK,
+          message: 'Verification email resubmited!',
+        });
+      } catch (e) {
+        console.log(e.message); //спрятать ошибку
+        return next(e);
+      }
+    }
+    return res.status(HttpCode.CONFLICT).json({
+      status: 'error',
+      code: HttpCode.CONFLICT,
+      message: 'Email has already been verified',
+    });
+  }
+  return res.status(HttpCode.NOT_FOUND).json({
+    status: 'error',
+    code: HttpCode.NOT_FOUND,
+    message: 'User not found.',
+  });
+};
+
 module.exports = {
   signupRouter,
   loginRouter,
   logoutRouter,
   currentRouter,
   avatars,
+  verify,
+  repeatSendEmailVerify,
 };
